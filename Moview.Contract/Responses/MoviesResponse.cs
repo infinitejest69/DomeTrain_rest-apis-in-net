@@ -3,6 +3,6 @@
     public class MoviesResponse
     {
 
-        public required IEnumerable<MovieResponse> Movies { get; init; } = [];
+        public required IEnumerable<MovieResponse> Items { get; init; } = [];
     }
 }

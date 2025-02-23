@@ -1,5 +1,6 @@
 ﻿using Movies.Application.Models;
 using Movies.Contracts.Requests;
+using Movies.Contracts.Responses;
 
 namespace Movies.Api.Mapping
 {
@@ -20,6 +21,47 @@ namespace Movies.Api.Mapping
                 Cast = request.Cast.ToList(),
                 Trailer = request.Trailer,
                 Image = request.Image
+            };
+        }
+        public static Movie ToMovie(this UpdateMovieRequest request, Guid id)
+        {
+            return new Movie
+            {
+                Id= id,
+                Title = request.Title,
+                Description = request.Description,
+                Genre = request.Genre.ToList(),
+                Duration = request.Duration,
+                ReleaseDate = request.ReleaseDate,
+                Director = request.Director,
+                Cast = request.Cast.ToList(),
+                Trailer = request.Trailer,
+                Image = request.Image
+            };
+        }
+
+        public static MovieResponse ToMovieResponse(this Movie movie)
+        {
+            return new MovieResponse
+            {
+                Id = movie.Id,
+                Title = movie.Title,
+                Description = movie.Description,
+                Genre = movie.Genre,
+                Duration = movie.Duration,
+                ReleaseDate = movie.ReleaseDate,
+                Director = movie.Director,
+                Cast = movie.Cast,
+                Trailer = movie.Trailer,
+                Image = movie.Image
+            };
+        }
+
+        public static MoviesResponse ToMoviesResponse(this IEnumerable<Movie> movies)
+        {
+            return new MoviesResponse
+            {
+                Items = movies.Select(m => m.ToMovieResponse())
             };
         }
     }
