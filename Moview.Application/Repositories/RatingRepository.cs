@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Movies.Application.Database;
+using Movies.Application.Models;
 
 namespace Movies.Application.Repositories;
 
@@ -10,6 +11,22 @@ public class RatingRepository : IRatingRepository
     public RatingRepository(IDbConnectionFactory dbConnectionFactory)
     {
         _dbConnectionFactory = dbConnectionFactory;
+    }
+
+    public async Task<bool> DeleteRatingAsync(Guid movieId, Guid userId, CancellationToken cancellationToken = default)
+    {
+        using System.Data.IDbConnection connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
+        int result = await connection.ExecuteAsync(
+            new CommandDefinition(
+                """
+                delete from ratings
+                where movie_id = @movieId
+                  and userid = @userId
+                """, new { movieId, userId },
+                cancellationToken: cancellationToken
+            )
+        );
+        return result > 0;
     }
 
     public async Task<float?> GetRatingAsync(Guid movieId, CancellationToken cancellationToken = default)
@@ -44,6 +61,23 @@ public class RatingRepository : IRatingRepository
                 where movieid = @movieId                                       
                 """, new { movieId, userId },
                 cancellationToken: cancellationToken));
+        return movies;
+    }
+
+    public async Task<IEnumerable<MovieRating>> GetRatingsForUserAsync(Guid? userId = null, CancellationToken cancellationToken = default)
+    {
+        using System.Data.IDbConnection connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
+        IEnumerable<MovieRating> movies = await connection.QueryAsync<MovieRating>(
+            new CommandDefinition(
+                """
+                select r.rating, r.movie_id, m.slug
+                from ratings r
+                inner join movies m on r.movie_id = m.id
+                where r.userid = @userId
+                """, new { userId },
+                cancellationToken: cancellationToken
+            )
+        );
         return movies;
     }
 

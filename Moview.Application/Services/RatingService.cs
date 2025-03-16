@@ -1,4 +1,5 @@
-﻿using Movies.Application.Repositories;
+﻿using Movies.Application.Models;
+using Movies.Application.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,23 @@ namespace Movies.Application.Services
             _ratingRepository = ratingRepository;
             _movieRepository = movieRepository;
 
+        }
+
+        public async Task<bool> DeleteRatingAsync(Guid moveId, Guid userId, CancellationToken cancellationToken = default)
+        {
+            var movie = await _movieRepository.ExistsByIdAsync(moveId, userId, cancellationToken);
+            if (!movie)
+            {
+                return false;
+            }
+            return await _ratingRepository.DeleteRatingAsync(moveId, userId, cancellationToken);
+
+        }
+
+        public Task<IEnumerable<MovieRating>> GetRatingsForUserAsync(Guid? userId = null, CancellationToken cancellationToken = default)
+        {
+            var ratings = _ratingRepository.GetRatingsForUserAsync(userId, cancellationToken);
+            return ratings;
         }
 
         public async Task<bool> RateMovieAsync(Guid movieId, int rating, Guid userId, CancellationToken cancellationToken = default)

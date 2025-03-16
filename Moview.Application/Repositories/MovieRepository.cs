@@ -237,8 +237,8 @@ namespace Movies.Application.Repositories
                     """
                     select m.*, round(avg(r.rating), 1) as rating, myr.rating as userrating
                     from movies m
-                    left join ratings r on m.id = r.movieid
-                    left join ratings myr on m.id = myr.movieid
+                    left join ratings r on m.id = r.movie_id
+                    left join ratings myr on m.id = myr.movie_id
                         and myr.userid = @userId
                     where slug = @slug
                     group by id, userrating
@@ -254,7 +254,7 @@ namespace Movies.Application.Repositories
 
             var genres = await connection.QueryAsync<string>(
                 new CommandDefinition("""
-            select name from genres where movieid = @id 
+            select name from genres where movie_id = @id 
             """, new { id = movie.Id }, cancellationToken: cancellationToken));
 
             foreach (var genre in genres)
