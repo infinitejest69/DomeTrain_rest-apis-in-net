@@ -14,13 +14,12 @@ namespace Movies.Api.Mapping
                 Id = Guid.NewGuid(),
                 Title = request.Title,
                 Description = request.Description,
-                Genre = request.Genre.ToList(),
                 Duration = request.Duration,
                 ReleaseYear = request.ReleaseYear,
                 Director = request.Director,
-                Cast = request.Cast.ToList(),
                 Trailer = request.Trailer,
-                Image = request.Image
+                Image = request.Image,
+                Genres = request.Genres.ToList()
             };
         }
         public static Movie ToMovie(this UpdateMovieRequest request, Guid id)
@@ -30,13 +29,12 @@ namespace Movies.Api.Mapping
                 Id= id,
                 Title = request.Title,
                 Description = request.Description,
-                Genre = request.Genre.ToList(),
                 Duration = request.Duration,
                 ReleaseYear = request.ReleaseYear,
                 Director = request.Director,
-                Cast = request.Cast.ToList(),
                 Trailer = request.Trailer,
-                Image = request.Image
+                Image = request.Image,
+                Genres = request.Genres.ToList()
             };
         }
 
@@ -48,13 +46,14 @@ namespace Movies.Api.Mapping
                 Slug = movie.Slug,
                 Title = movie.Title,
                 Description = movie.Description,
-                Genre = movie.Genre,
                 Duration = movie.Duration,
                 ReleaseYear = movie.ReleaseYear,
                 Director = movie.Director,
-                Cast = movie.Cast,
                 Trailer = movie.Trailer,
-                Image = movie.Image
+                Image = movie.Image,
+                Rating = movie.Rating,
+                UserRating = movie.UserRating,
+                Genres = movie.Genres
             };
         }
 

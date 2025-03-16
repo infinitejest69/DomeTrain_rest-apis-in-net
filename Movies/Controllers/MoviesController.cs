@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Movies.Api.Auth;
 using Movies.Api.Mapping;
 using Movies.Application.Repositories;
 using Movies.Application.Services;
@@ -33,7 +34,9 @@ namespace Movies.Api.Controllers
         [HttpGet(ApiEndpoints.Movies.GetAll)]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
-            var movies = await _movieService.GetAllAsync(cancellationToken);
+            var user = HttpContext.GetUserId();
+            
+            var movies = await _movieService.GetAllAsync(user, cancellationToken);
             return Ok(movies.ToMoviesResponse());
         }
         
@@ -43,9 +46,11 @@ namespace Movies.Api.Controllers
             CancellationToken cancellationToken
         )
         {
+            var user = HttpContext.GetUserId();
+            
             var movie = Guid.TryParse(idOrSlug, out var guid)
-                ? await _movieService.GetByIdAsync(guid, cancellationToken)
-                : await _movieService.GetBySlugAsync(idOrSlug, cancellationToken);
+                ? await _movieService.GetByIdAsync(guid, user, cancellationToken)
+                : await _movieService.GetBySlugAsync(idOrSlug,user, cancellationToken);
 
             if (movie == null)
             {
@@ -64,7 +69,8 @@ namespace Movies.Api.Controllers
         )
         {
             var movie = request.ToMovie(id);
-            var updatedMovie = await _movieService.UpdateAsync(movie, cancellationToken);
+            var user = HttpContext.GetUserId();
+            var updatedMovie = await _movieService.UpdateAsync(movie,user, cancellationToken);
             if (updatedMovie is null)
             {
                 return NotFound();

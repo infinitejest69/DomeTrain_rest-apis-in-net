@@ -19,9 +19,7 @@ namespace Movies.Application.Validators
             _movieRepository = movieRepository;
             RuleFor(x => x.Id).NotEmpty();
             RuleFor(x => x.Title).NotEmpty();
-            RuleFor(x => x.Genre).NotEmpty();
             RuleFor(x => x.ReleaseYear).LessThanOrEqualTo(DateTime.UtcNow.Year);
-            RuleFor(x => x.Cast).NotEmpty();
             RuleFor(x => x.Slug).MustAsync(ValidateSlug).WithMessage("This movie already exsists in the system");
 
         }

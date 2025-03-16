@@ -15,14 +15,17 @@ namespace Movies.Application.Models
             return $"{sluggedTitle}-{ReleaseYear}";
         }
 
+        public float? Rating { get; set; }
+        public int? UserRating { get; set; }
+        public required List<string> Genres { get; init; } = new();
+
         public string Description { get; set; }
-        public required List<string> Genre { get; set; } = [];
         public int Duration { get; set; }
         public required int ReleaseYear { get; set; }
         public string Director { get; set; }
-        public required List<string> Cast { get; set; } = [];
         public string Trailer { get; set; }
         public required string Image { get; set; }
+
         [GeneratedRegex("[^0-9A-Za-z _-]", RegexOptions.NonBacktracking, 10)]
         private static partial Regex SlugRegex();
     }
