@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Movies.Api.Mapping;
 using Movies.Application.Repositories;
 using Movies.Application.Services;
@@ -16,6 +17,7 @@ namespace Movies.Api.Controllers
             _movieService = movieService;
         }
 
+        [Authorize(AuthConstants.TrustedClaimName)]
         [HttpPost(ApiEndpoints.Movies.Create)]
         public async Task<IActionResult> Create(
             [FromBody] CreateMovieRequest request,
@@ -27,14 +29,14 @@ namespace Movies.Api.Controllers
             await _movieService.CreateAsync(movie, cancellationToken);
             return CreatedAtAction(nameof(GetAll), new { idOrSlug = movie.Id }, movie);
         }
-
+        
         [HttpGet(ApiEndpoints.Movies.GetAll)]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
-            var movies = await _movieService.GetAllAsync( cancellationToken);
+            var movies = await _movieService.GetAllAsync(cancellationToken);
             return Ok(movies.ToMoviesResponse());
         }
-
+        
         [HttpGet(ApiEndpoints.Movies.Get)]
         public async Task<IActionResult> GetById(
             [FromRoute] string idOrSlug,
@@ -49,9 +51,11 @@ namespace Movies.Api.Controllers
             {
                 return NotFound();
             }
+
             return Ok(movie.ToMovieResponse());
         }
 
+        [Authorize(AuthConstants.TrustedClaimName)]
         [HttpPut(ApiEndpoints.Movies.Update)]
         public async Task<IActionResult> UpdateById(
             [FromRoute] Guid id,
@@ -65,10 +69,12 @@ namespace Movies.Api.Controllers
             {
                 return NotFound();
             }
+
             var response = movie.ToMovieResponse();
             return Ok(response);
         }
 
+        [Authorize(AuthConstants.AdminUserPolicyName)]
         [HttpDelete(ApiEndpoints.Movies.Delete)]
         public async Task<IActionResult> DeleteById(
             [FromRoute] Guid id,
@@ -80,6 +86,7 @@ namespace Movies.Api.Controllers
             {
                 return NotFound();
             }
+
             return Ok();
         }
     }
