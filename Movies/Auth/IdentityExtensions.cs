@@ -12,6 +12,7 @@ public static class IdentityExtensions
         {
             return parsedId;
         }
+
         return null;
     }
     

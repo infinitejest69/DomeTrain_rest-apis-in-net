@@ -112,7 +112,6 @@ namespace Movies.Application.Repositories
         {
             using System.Data.IDbConnection connection = await _dbConnectionFactory.CreateConnectionAsync(cancellationToken);
             IEnumerable<dynamic> movies = await connection.QueryAsync(
-
     new CommandDefinition(
         """
         select m.*, 
@@ -120,9 +119,9 @@ namespace Movies.Application.Repositories
                round(avg(r.rating), 1) as rating, 
                myr.rating as userrating
         from movies m 
-        left join genres g on m.id = g.movieid
-        left join ratings r on m.id = r.movieid
-        left join ratings myr on m.id = myr.movieid
+        left join genres g on m.id = g.movie_id
+        left join ratings r on m.id = r.movie_id
+        left join ratings myr on m.id = myr.movie_id
             and myr.userid = @userId
         group by id, userrating
         """, new { userId },
@@ -142,7 +141,7 @@ namespace Movies.Application.Repositories
                 Trailer = x.trailer,
                 Image = x.image,
                 Rating = (float?)x.rating,
-                UserRating = (int?)x.userRating,
+                UserRating = (int?)x.userrating,
                 Genres = Enumerable.ToList(x.genres.Split(','))
             });
         }
@@ -158,8 +157,8 @@ namespace Movies.Application.Repositories
     """
     select m.*, round(avg(r.rating), 1) as rating, myr.rating as userrating 
     from movies m
-    left join ratings r on m.id = r.movieid
-    left join ratings myr on m.id = myr.movieid
+    left join ratings r on m.id = r.movie_id
+    left join ratings myr on m.id = myr.movie_id
         and myr.userid = @userId
     where id = @id
     group by id, userrating
@@ -175,7 +174,7 @@ namespace Movies.Application.Repositories
 
             var genres = await connection.QueryAsync<string>(
                 new CommandDefinition("""
-            select name from genres where movieid = @id 
+            select name from genres where movie_id = @id 
             """, new { id }, cancellationToken: cancellationToken));
 
             foreach (var genre in genres)
